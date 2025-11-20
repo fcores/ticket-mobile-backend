@@ -2,6 +2,8 @@ import os
 import django
 import random
 
+
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'helpdesk.settings')
 django.setup()
 
