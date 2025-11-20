@@ -10,7 +10,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'helpdesk.settings')
 django.setup()
 
 from django.contrib.auth import get_user_model
-from apps.categories.models import TicketCategory
+from apps.categories.models import Category
 from apps.tickets.models import Ticket
 
 User = get_user_model()
@@ -76,8 +76,8 @@ categories = [
 ]
 
 for cat_data in categories:
-    if not TicketCategory.objects.filter(name=cat_data['name']).exists():
-        TicketCategory.objects.create(**cat_data)
+    if not Category.objects.filter(name=cat_data['name']).exists():
+        Category.objects.create(**cat_data)
         print(f'   ✓ Categoría creada: {cat_data["name"]}')
     else:
         print(f'   - Categoría ya existe: {cat_data["name"]}')
@@ -123,7 +123,7 @@ print('\n' + '=' * 70)
 print('✓ INICIALIZACIÓN COMPLETADA')
 print('=' * 70)
 print(f'\nUsuarios totales: {User.objects.count()}')
-print(f'Categorías totales: {TicketCategory.objects.count()}')
+print(f'Categorías totales: {Category.objects.count()}')
 print(f'Tickets totales: {Ticket.objects.count()}')
 print('\nCredenciales de acceso:')
 print('  Admin: admin@test.com / Admin123!')
