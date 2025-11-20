@@ -54,17 +54,36 @@ users_data = [
 
 for user_data in users_data:
     if not User.objects.filter(email=user_data['email']).exists():
-        User.objects.create_user(
-            username=user_data['email'],
-            email=user_data['email'],
-            password=user_data['password'],
-            first_name=user_data['first_name'],
-            last_name=user_data['last_name'],
-            role=user_data['role']
-        )
+        # Usar create_superuser para admin, create_user para los demás
+        if user_data['role'] == 'sysAdmin':
+            User.objects.create_superuser(
+                username=user_data['email'],
+                email=user_data['email'],
+                password=user_data['password'],
+                first_name=user_data['first_name'],
+                last_name=user_data['last_name'],
+                role=user_data['role']
+            )
+        else:
+            User.objects.create_user(
+                username=user_data['email'],
+                email=user_data['email'],
+                password=user_data['password'],
+                first_name=user_data['first_name'],
+                last_name=user_data['last_name'],
+                role=user_data['role']
+            )
         print(f'   ✓ Usuario creado: {user_data["email"]}')
     else:
-        print(f'   - Usuario ya existe: {user_data["email"]}')
+        # Actualizar usuario existente si es admin para asegurar permisos
+        if user_data['role'] == 'sysAdmin':
+            user = User.objects.get(email=user_data['email'])
+            user.is_staff = True
+            user.is_superuser = True
+            user.save()
+            print(f'   ✓ Admin actualizado: {user_data["email"]}')
+        else:
+            print(f'   - Usuario ya existe: {user_data["email"]}')
 
 # 2. Crear categorías
 print('\n2. Creando categorías...')
