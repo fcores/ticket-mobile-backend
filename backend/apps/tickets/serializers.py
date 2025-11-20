@@ -46,13 +46,15 @@ class TicketListSerializer(serializers.ModelSerializer):
     def get_imageUrl(self, obj):
         """Get full URL for ticket image."""
         if obj.image:
+            # Si la URL ya es absoluta (Cloudinary), devolverla directamente
+            if obj.image.url.startswith('http'):
+                return obj.image.url
+            # Si no, construir URL completa
             request = self.context.get('request')
             if request:
                 return request.build_absolute_uri(obj.image.url)
-            # Fallback: construir URL con configuración por defecto
-            from django.conf import settings
-            base_url = getattr(settings, 'BASE_URL', 'http://10.0.2.2:8000')
-            return f"{base_url}{obj.image.url}"
+            # Fallback: usar URL relativa (Django la resolverá)
+            return obj.image.url
         return None
 
     def get_commentsCount(self, obj):
@@ -99,13 +101,15 @@ class TicketDetailSerializer(serializers.ModelSerializer):
     def get_imageUrl(self, obj):
         """Get full URL for ticket image."""
         if obj.image:
+            # Si la URL ya es absoluta (Cloudinary), devolverla directamente
+            if obj.image.url.startswith('http'):
+                return obj.image.url
+            # Si no, construir URL completa
             request = self.context.get('request')
             if request:
                 return request.build_absolute_uri(obj.image.url)
-            # Fallback: construir URL con configuración por defecto
-            from django.conf import settings
-            base_url = getattr(settings, 'BASE_URL', 'http://10.0.2.2:8000')
-            return f"{base_url}{obj.image.url}"
+            # Fallback: usar URL relativa (Django la resolverá)
+            return obj.image.url
         return None
 
 

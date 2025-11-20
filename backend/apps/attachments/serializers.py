@@ -35,14 +35,16 @@ class AttachmentSerializer(serializers.ModelSerializer):
 
     def get_fileUrl(self, obj):
         """Get file URL."""
-        request = self.context.get('request')
         if obj.file and hasattr(obj.file, 'url'):
+            # Si la URL ya es absoluta (Cloudinary), devolverla directamente
+            if obj.file.url.startswith('http'):
+                return obj.file.url
+            # Si no, construir URL completa
+            request = self.context.get('request')
             if request:
                 return request.build_absolute_uri(obj.file.url)
-            # Fallback: construir URL con configuración por defecto
-            from django.conf import settings
-            base_url = getattr(settings, 'BASE_URL', 'http://10.0.2.2:8000')
-            return f"{base_url}{obj.file.url}"
+            # Fallback: usar URL relativa
+            return obj.file.url
         return None
 
 
