@@ -18,7 +18,10 @@ urlpatterns = [
     path('api/', include('apps.common.urls')),
 ]
 
-# Serve media files during development
+# Serve media files in development and production
+# Whitenoise sirve static, pero media lo hacemos manual
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Solo en desarrollo servir static manualmente
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
