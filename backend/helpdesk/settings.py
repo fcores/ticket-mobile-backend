@@ -16,15 +16,22 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-secret-key-here-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-# Permitir Railway y localhost
+# Permitir Railway, Render y localhost
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,10.0.2.2').split(',')
+
 # Agregar dominio de Railway automáticamente
 railway_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
 if railway_domain and railway_domain not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(railway_domain)
-# Agregar *.railway.app
+
+# Agregar dominio de Render automáticamente
+render_domain = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if render_domain and render_domain not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_domain)
+
+# Agregar dominios comodín en producción
 if not DEBUG:
-    ALLOWED_HOSTS.append('.railway.app')
+    ALLOWED_HOSTS.extend(['.railway.app', '.onrender.com'])
 
 # Application definition
 DJANGO_APPS = [
@@ -193,23 +200,9 @@ SIMPLE_JWT = {
 }
 
 # CORS Settings
-# Permitir todas las peticiones en desarrollo, en producción solo desde dominios específicos
-if DEBUG:
-    CORS_ALLOW_ALL_ORIGINS = True
-else:
-    # En producción, permite tu dominio de Railway
-    railway_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN', '')
-    CORS_ALLOWED_ORIGINS = [
-        f"https://{railway_domain}" if railway_domain else "",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ]
-    # Filtrar valores vacíos
-    CORS_ALLOWED_ORIGINS = [origin for origin in CORS_ALLOWED_ORIGINS if origin]
-    # Si no hay dominios configurados, permitir todos (temporal)
-    if not CORS_ALLOWED_ORIGINS:
-        CORS_ALLOW_ALL_ORIGINS = True
-
+# Permitir todas las peticiones en desarrollo y producción (para apps móviles)
+# Las apps móviles pueden hacer requests desde cualquier lugar
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_HEADERS = [
